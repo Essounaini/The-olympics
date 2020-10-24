@@ -1,0 +1,147 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+Summer Olympic Medals
+======================
+ESSOUNAINI SOUFIANE
+
+##Synopsis:
+
+  Using this dataset downloaded from Kaggle.com, we are trying to get a clearer idea of the evolution of different countries at the olympics especially our country Morocco throughout the years and also to see which are the countries who have dominated the olympics as far as the total number of medals harvested.
+
+##1.Processing Data
+
+First, we import packages which are going to help us in our analysis:
+
+```{r,echo=TRUE,cache=TRUE} 
+library(dplyr)
+library(ggplot2)
+
+```
+
+Then, we are going to read file in a table format:
+
+```{r,echo=TRUE}
+data <-read.csv("Summer-Olympic-medals-1976-to-2008.csv")
+head(data)
+
+```
+
+##2.Top 20 gold medal winning countries:
+
+```{r,echo=TRUE}
+data_ordered_by <- subset(data,data$Medal=="Gold")
+data_ordered_by$Medal="1"
+head(data_ordered_by)
+data_ordered_by$Medal<-as.numeric(data_ordered_by$Medal)
+
+
+```
+
+
+```{r}
+
+data3<-data_ordered_by %>%
+        group_by(Country) %>%
+        summarise(somme_Gold=sum(Medal),na.rm=TRUE) %>%
+        arrange(desc(somme_Gold))%>%
+        select(Country,somme_Gold)
+x<-seq(1:87)
+
+data31<-cbind(x,data3)
+colnames(data31)<-c("Rank","Country","Gold_medals")
+data31[1:20,]
+```
+
+##3.Histograms showing each country's total number of gold medals won from 1976 until 2008:
+
+```{r,echo=TRUE}
+
+data4<-data31[1:40,]
+data5<-data31[41:87,]
+g<-ggplot(data4,aes(y=Country,x=Gold_medals))
+g+geom_bar(stat="identity",aes(fill=Country)) +theme_light()+labs(title = "Total Gold Medals in the Olympics per Country",xlab="Sum of Gold Medals",ylab="Country")
+g<-ggplot(data5,aes(y=Country,x=Gold_medals))
+g+geom_bar(stat="identity",aes(fill=Country)) +theme_light()+labs(title = "Total Gold Medals in the Olympics per Country",xlab="Sum of Gold Medals",ylab="Country")
+
+```
+
+##4.Top silver medal winning countries:
+
+
+```{r,echo=TRUE}
+data_Silver <- subset(data,data$Medal=="Silver")
+data_Silver$Medal="1"
+head(data_Silver)
+data_Silver$Medal<-as.numeric(data_Silver$Medal)
+class(data_Silver$Medal)
+```
+
+```{r,echo=TRUE}
+
+data_Sil<-data_Silver %>%
+        group_by(Country) %>%
+        summarise(somme_Silver=sum(Medal),na.rm=TRUE) %>%
+        arrange(desc(somme_Silver))%>%
+        select(Country,somme_Silver)
+x<-seq(1:106)
+
+data_Sil1<-cbind(x,data_Sil)
+colnames(data_Sil1)<-c("Rank","Country","Silver_medals")
+data_Sil1
+
+```
+
+##5.Top bronze medal winning countries:
+
+```{r,echo=TRUE}
+data_Bronze <- subset(data,data$Medal=="Bronze")
+data_Bronze$Medal="1"
+head(data_Bronze)
+data_Bronze$Medal<-as.numeric(data_Bronze$Medal)
+class(data_Silver$Bronze)
+
+```
+
+```{r,echo=TRUE}
+
+data_Brn<-data_Bronze %>%
+        group_by(Country) %>%
+        summarise(somme_Bronze=sum(Medal),na.rm=TRUE) %>%
+        arrange(desc(somme_Bronze))%>%
+        select(Country,somme_Bronze)
+x<-seq(1:108)
+
+data_Brn1<-cbind(x,data_Brn)
+colnames(data_Brn1)<-c("Rank","Country","Bronze_medals")
+data_Brn1
+
+```
+
+##6.Number of medals won by Morocco in the Olympics from 1976 until 2008:
+
+```{r,echo=TRUE}
+data_Morocco<-subset(data,Country=="Morocco")
+data_Morocco
+data_Morocco$Medal=="1"
+data_Morocco$Medal<-as.numeric(data_Morocco$Medal)
+data_Moroccoperyear<-data_Morocco %>%
+        group_by(Year)%>%
+        summarise(Somme=sum(Medal),na.rm=TRUE) %>%
+        arrange(Somme) %>%
+        select(Year,Somme)
+data_Moroccoperyear
+
+```
+
+##7.Plot shows medals won by Morocco in the Olympics from 1976 until 2008:
+
+```{r,echo=TRUE}
+g<-ggplot(data_Moroccoperyear,aes(Year,Somme))
+g+geom_point()+geom_line(colour="green",alpha=1)+labs(title="Medals won by Morocco from 1976 until 2008 ")
+
+```
+
+##Conclusion:
